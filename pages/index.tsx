@@ -1,7 +1,8 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import { FiGlobe } from 'react-icons/fi'
-import { SupportedLocale, SUPPORTED_LOCALES, SwapWidget } from '@uniswap/widgets'
+import { SupportedLocale, SUPPORTED_LOCALES, SwapWidget } from '@adfuel/uniswap-widgets'
+import { InjectedCallbackContext } from '@adfuel/uniswap-widgets'
 
 // ↓↓↓ Don't forget to import the widgets' fonts! ↓↓↓
 import '@uniswap/widgets/fonts.css'
@@ -61,16 +62,25 @@ const Home: NextPage = () => {
           </div>
 
           <div className={styles.widget}>
-            <SwapWidget
-              jsonRpcEndpoint={JSON_RPC_URL}
-              tokenList={TOKEN_LIST}
-              provider={provider}
-              locale={locale}
-              onConnectWallet={focusConnectors}
-              defaultInputTokenAddress="NATIVE"
-              defaultInputAmount="1"
-              defaultOutputTokenAddress={UNI}
-            />
+            <InjectedCallbackContext.Provider value={{
+              onConfirmSwap(event) {
+                console.log('onConfirmSwap', event)
+                return {
+                  interrupt: false, // 是否中断交易
+                }
+              },
+            }}>
+              <SwapWidget
+                jsonRpcEndpoint={JSON_RPC_URL}
+                tokenList={TOKEN_LIST}
+                provider={provider}
+                locale={locale}
+                onConnectWallet={focusConnectors}
+                defaultInputTokenAddress="NATIVE"
+                defaultInputAmount="1"
+                defaultOutputTokenAddress={UNI}
+              />
+            </InjectedCallbackContext.Provider>
           </div>
         </div>
 
